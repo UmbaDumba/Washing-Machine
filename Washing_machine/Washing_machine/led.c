@@ -11,6 +11,7 @@
 
 extern volatile int msec_count; // extern으로 되어있으면 초기화 뺄것!
 int led_state = 0;
+int led_arr[LED_COUNT] = {LED1, LED2, LED3, LED4, LED5, LED6};
 
 void (*funcs[FUNC_NUM])(void) =
 {
@@ -26,10 +27,23 @@ void (*funcs[FUNC_NUM])(void) =
 
 int led_main(void)   // 정의 
 {
-	DDRA = 0xff;   // PORTA에 연결된 pin8개를 output mode로 
+	led_init();
+	led_all_on();
+	_delay_ms(1000);
+	led_all_off();
+	_delay_ms(1000);
+	
+	//DDRA = 0xff;   // PORTA에 연결된 pin8개를 output mode로 
 
-	funcs[led_state]();
+	//funcs[led_state]();
 		
+}
+
+void led_init(void)
+{
+	for (int i = 0; i < LED_COUNT; i++){
+		LED_DDR |= 1 << led_arr[i];
+	}
 }
 
 void state_transaction(void)
@@ -135,12 +149,16 @@ void shift_right_ledon(void)
 
 void led_all_on(void)
 {
-	PORTA = 0xff;
+	for (int i = 0; i < LED_COUNT; i++){
+		LED_PORT |= 1 << led_arr[i];
+	}
 }
 
 void led_all_off(void)
 {
-	PORTA = 0x00;
+	for (int i = 0; i < LED_COUNT; i++){
+		LED_PORT &= ~(1 << led_arr[i]);
+	}
 }
 
 void make_pwm_led_control(void)
@@ -173,4 +191,10 @@ void led_on_pwm(int dim)
 		if(i > dim) PORTA = 0x00;
 		_delay_us(20);
 	}	
+}
+
+void led_on_range(int led_count){
+	for (int i = 0; i < led_count; i++){
+		LED_PORT &= ~(1 << led_arr[i]);
+	}
 }

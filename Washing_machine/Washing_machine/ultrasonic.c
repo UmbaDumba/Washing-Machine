@@ -10,10 +10,9 @@
 extern volatile int ultrasonic_check_timer;
 
 
-
-
+volatile int pre_tcnt3 = 0;
 volatile int ultrasonic_dis = 0;
-volatile char scm[50];
+//volatile char scm[50];
 
 // 상승, 하강 엣지 둘 다 에서 들어옴!
 ISR(INT4_vect)
@@ -21,7 +20,7 @@ ISR(INT4_vect)
 	// 1. rising edge -> 지금 echo는 HIGH
 	if(ECHO_PIN & 1 << ECHO)
 	{
-		TCNT1 = 0; // 16bit counter 개수 세기 시작!!
+		TCNT3 = 0; // 16bit counter 개수 세기 시작!!
 					// 여기서 clear하니까 init에서 굳이 안했구낭
 					// TCNT1 레지스터의 값 자체는 인터럽트랑 관련없이 그냥 timer에 맞춰서 증가하니까!
 	}
@@ -29,14 +28,18 @@ ISR(INT4_vect)
 	else
 	{
 		// ECHO핀에 들어온 펄스 개수를 us로 환산한다
-		ultrasonic_dis = 1000000.0 * TCNT1 * 1024 / F_CPU;
+		//ultrasonic_dis = 1000000.0 * TCNT3 * 4;
+		ultrasonic_dis = 1000000.0 * TCNT1 * 64 / F_CPU;
+		ultrasonic_dis /= 58;
+		
+		
 		
 		// ex) TCNT1 == 10 일 때
 		// 15.625KHz의 1주기는 64us
 		// 즉,,, 지금은 640us가 지난시점 == 0.00064sec가 지남!!!
 		// 초음파가 1cm에 58us가 걸리니까,,,
 		// 640us / 58us ==> 11cm
-		sprintf(scm, "dis : %dcm\n",ultrasonic_dis / 58); // 화면에 출력하지 말고 scm에 넣기
+		//sprintf(scm, "dis : %dcm\n",ultrasonic_dis / 58); // 화면에 출력하지 말고 scm에 넣기
 	}
 
 }
@@ -61,7 +64,10 @@ void init_ultrasonic(void)
 	// 1주기 T = 1 / 15625 = 0.000064s = 0.064ms = 64us
 	
 	// 1024로 분주
-	TCCR1B  |= 1 << CS12 | 0 << CS11 | 1 << CS10;
+	//TCCR1B  |= 1 << CS12 | 0 << CS11 | 1 << CS10;
+	
+	// 8분주 -> 16000000 / 8 = 2000000Hz = 2MHz
+	// 1주기에 걸리는 시간 = 1/2000000 = 0.0000005sec = 0.5us
 	
 	// local interrupt 마스크
 	EIMSK |= 1 << INT4; // EXTERNAL interrupt 활성화
@@ -96,7 +102,7 @@ void distance_ultrasonic(void)
 	if(ultrasonic_check_timer >= 1000)
 	{
 		ultrasonic_check_timer = 0;
-		printf("%s", scm); // 저장해둔 거리text 출력
+		//printf("%s", scm); // 저장해둔 거리text 출력
 		
 		trigger_ultrasonic(); // 출력하고 트리거 또 보내기!
 	}

@@ -19,6 +19,8 @@
 
 typedef struct{
 	int mode;
+	int step;
+	int dir;
 	int washing_time;
 	int washing_start_time;
 	int washing_end_time;
@@ -30,6 +32,7 @@ typedef struct{
 // extern----------------------------------------------------------
 
 extern volatile uint8_t rx_message_received;
+extern volatile int ultrasonic_dis;
 
 extern uint32_t sec_count;
 extern int timer_run;
@@ -154,7 +157,7 @@ int main(void)
 	init_uart0();
 	init_speaker();
 	//init_uart1();
-	//init_ultrasonic();
+	init_ultrasonic();
 	init_L298N();
 	stdout = &OUTPUT;	
 	sei();			
@@ -177,6 +180,7 @@ int main(void)
 		{
 			sec_count++;
 			msec_count = 0;
+			
 		}
 		
 		if(washing_msec_count >= 1000)
@@ -197,6 +201,7 @@ int main(void)
 		switch(step){
 			case 0:
 				// 세탁기 off 상태
+				motor_stop();
 				fnd_display_dashs();
 				break;
 			case 1:
@@ -327,10 +332,13 @@ int step1_select(void)
 	{
 		// 세탁 시작 -> 초음파센서로 문이 닫혀있는지 확인하고 보내기
 		
-		// ------------
-		// TO DO
-		// 초음파센서 확인
-		// -------------
+		//trigger_ultrasonic();
+		//printf("%d\n", ultrasonic_dis);
+		//if(ultrasonic_dis >= 10)
+		//{
+			//Beep();
+			//return -1;
+		//}
 		
 		return result_mode;
 	}

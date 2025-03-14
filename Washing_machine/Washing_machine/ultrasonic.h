@@ -14,7 +14,7 @@
 #include <util/delay.h>  // _delay_ms _delay_us
 #include <avr/interrupt.h>
 
-#define TRIG 4  // echo pin 번호
+#define TRIG 0  // echo pin 번호
 #define TRIG_PORT PORTG
 #define TRIG_DDR DDRG
 

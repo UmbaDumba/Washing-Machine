@@ -15,7 +15,7 @@
 
 #define FUNC_NUM 8 // led함수 개수
 
-#define MODE_NUM		3 // 세탁모드 개수
+#define MODE_NUM		4 // 세탁모드 개수
 
 #define MODE_1_DEFAULT	0
 #define MODE_2_WOOL		1

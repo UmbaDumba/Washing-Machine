@@ -128,8 +128,13 @@ int main(void)
 		if(msec_count >= 1000)
 		{
 			sec_count++;
-			washing_sec_time++;
 			msec_count = 0;
+		}
+		
+		if(washing_msec_count >= 1000)
+		{
+			washing_msec_count = 0;
+			washing_sec_time++;
 		}
 		
 		// 버튼 3번은 항상 step 1 로 초기화
@@ -155,11 +160,13 @@ int main(void)
 				{
 					// 사용자가 모드확인을 눌렀을 때
 					// 다음 step으로 넘어간다.
+					is_washing = 1;
 					step++;
 				}
 				break;
 			case 2:
 				fnd_display_min_sec_num(washing_machine[mode] - washing_sec_time);
+				_delay_ms(1);
 				if(washing_machine[mode] - washing_sec_time == 0)
 				{
 					// 세탁이 끝남!!
@@ -181,7 +188,8 @@ int main(void)
 				break;
 			case 3:
 				//step = step3_wash_end();
-				
+				fnd_display_done();
+				_delay_ms(1);
 				if (is_pressed_button(BUTTON0)){
 					init_washtime();
 					step = 0;
@@ -249,6 +257,7 @@ int step1_select(void)
 	}
 	
 	fnd_display_selectn(result_mode);
+	_delay_ms(1);
 	
 	if(is_pressed_button(BUTTON2))
 	{

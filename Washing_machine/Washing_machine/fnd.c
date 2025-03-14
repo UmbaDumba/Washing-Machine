@@ -86,7 +86,7 @@ void fnd_display_selectn(int mode)
 	fnd_clear_digit();
 	
 	FND_DIGIT_PORT |= 1 << digits[digit_select];
-	if(digit_select < 8)	FND_DATA_PORT = fnd_select_font[digit_select];
+	if(digit_select < 7)	FND_DATA_PORT = fnd_select_font[digit_select];
 	else FND_DATA_PORT = fnd_num_font[mode];
 
 	digit_select++;

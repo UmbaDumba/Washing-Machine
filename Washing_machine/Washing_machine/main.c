@@ -38,7 +38,7 @@ void init_timer0(void);
 void mode1_default(int re_wash_time);
 void mode2_wool(int re_wash_time);
 void mode3_blanket(int re_wash_time);
-void mode3_dry(int re_wash_time);
+void mode4_dry(int re_wash_time);
 
 
 volatile int msec_count = 0;
@@ -61,7 +61,22 @@ void (*wash_funcs[])(int) = {
 	mode1_default,
 	mode2_wool,
 	mode3_blanket,
-	mode3_dry
+	mode4_dry
+};
+
+int wash_speeds[][2] = {
+	{
+		WASHING_SPEED_DEFAULT, MOTOR_SPEED_MAX
+	},
+	{
+		WASHING_SPEED_DEFAULT, MOTOR_SPEED_MIN
+	},
+	{
+		MOTOR_SPEED_MAX, MOTOR_SPEED_MAX
+	},
+	{
+		MOTOR_SPEED_MAX, MOTOR_SPEED_MIN
+	}
 };
 
 FILE OUTPUT = FDEV_SETUP_STREAM(UART0_transmit, NULL, _FDEV_SETUP_WRITE);
@@ -115,6 +130,7 @@ int main(void)
 	sei();			
 	
 	//test_main();
+	//L298N_pwm_fan_control_main();
 	
 	int step = 0;
 	int mode = 0;
@@ -167,6 +183,8 @@ int main(void)
 			case 2:
 				fnd_display_min_sec_num(washing_machine[mode] - washing_sec_time);
 				_delay_ms(1);
+				fnd_display_big_circle();
+				_delay_ms(1);
 				if(washing_machine[mode] - washing_sec_time == 0)
 				{
 					// 세탁이 끝남!!
@@ -184,7 +202,9 @@ int main(void)
 					init_washtime();
 					step--;
 				}
-				wash_funcs[mode];
+				if(is_washing) wash_funcs[mode](washing_sec_time);
+				else motor_stop();
+				
 				break;
 			case 3:
 				//step = step3_wash_end();
@@ -300,27 +320,30 @@ int step3_wash_end(void)
 void mode1_default(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
-	// TODO
-	motor_set_speed_max();
+	motor_set_speed_num(wash_speeds[0][re_wash_time % 2]);
+	//motor_set_speed_num(250);
 }
 
 void mode2_wool(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
-	motor_set_speed_num(180);
+	motor_set_speed_num(wash_speeds[1][re_wash_time % 2]);
+	//motor_set_speed_num(250);
 }
 
 void mode3_blanket(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
-	motor_set_speed_num(100);
+	motor_set_speed_num(wash_speeds[2][re_wash_time % 2]);
+	//motor_set_speed_num(250);
 }
 
-void mode3_dry(int re_wash_time)
+void mode4_dry(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
-	motor_set_speed_min();
+	motor_set_speed_num(wash_speeds[3][re_wash_time % 2]);
+	//motor_set_speed_num(250);
 }

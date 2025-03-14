@@ -25,6 +25,8 @@
 #define MODE_1_WASHING_TIME	7	// 각 모드별 동작시간 (단위 : 초)
 #define MODE_2_WASHING_TIME	10
 #define MODE_3_WASHING_TIME	15
-#define MODE_4_WASHING_TIME	3
+#define MODE_4_WASHING_TIME	7
+
+#define WASHING_SPEED_DEFAULT 150
 
 #endif /* DEF_H_ */

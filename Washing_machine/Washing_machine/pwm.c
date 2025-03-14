@@ -107,6 +107,11 @@ void motor_speed_down_20(void)
 	motor_speed_down_num(20);
 }
 
+void motor_stop(void)
+{
+	MOTOR_PWM = MOTOR_STOP;
+}
+
 void pwm_fan_control_main(void)
 {
 	uint8_t	start_button = 0;
@@ -171,18 +176,6 @@ void L298N_pwm_fan_control_main(void)
 			PORTF |= forward ? (1 << 6) : (1 << 7);
 		}
 		
-		if(fnd_shoot)
-		{
-			fnd_shoot = 0;
-			if(timer_run) display_2fnds();
-			else	      display_stop();
-		}
-		
-		if (msec_count >= 1000)   // 1000ms --> 1sec
-		{
-			msec_count=0;
-			sec_count++;
-		}
 		
 	}
 }

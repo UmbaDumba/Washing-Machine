@@ -8,6 +8,9 @@
 
 extern volatile int msec_count;
 
+extern volatile int washing_msec_count;
+extern uint32_t washing_sec_time;
+
 //uint32_t ms_count=0;  // ms를 재는 count변수 unsigned int --> uint32_t
 uint32_t sec_count=0;  // 초를 재는 count변수 unsigned int --> uint32_t
 int circle_dir = 0;
@@ -59,13 +62,78 @@ uint8_t fnd_stop_font[] = {
 // - 
 uint8_t fnd_dash_font = 0xfd;
 
+// big circle   [0][1][2][3] 순서로 digit 볼 때
+uint8_t fnd_big_circle_forward_font0[] = {
+	0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 
+	0x7f, 0x7f, 0x7f, 0x6f, 0x4f, 0x0f
+};
 
+uint8_t fnd_big_circle_backward_font0[] = {
+	0xbf, 0x9f, 0x8f, 0x8f, 0x8f, 0x8f, 
+	0x8f, 0x8f, 0x8f, 0x8f, 0x8f, 0x0f
+};
+
+uint8_t fnd_big_circle_forward_font1[] = {
+	0xff, 0x7f, 0x7f, 0x7f, 0x7f, 0x7f, 
+	0x7f, 0x7f, 0x6f, 0x6f, 0x6f, 0x6f
+};
+
+uint8_t fnd_big_circle_backward_font1[] = {
+	0xff, 0xff, 0xff, 0x7f, 0x7f, 0x7f, 
+	0x7f, 0x7f, 0x7f, 0x7f, 0x6f, 0x6f
+};
+
+uint8_t fnd_big_circle_forward_font2[] = {
+	0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x7f, 
+	0x7f, 0x6f, 0x6f, 0x6f, 0x6f, 0x6f
+};
+
+uint8_t fnd_big_circle_backward_font2[] = {
+	0xff, 0xff, 0xff, 0xff, 0xef, 0xef, 
+	0xef, 0xef, 0xef, 0x6f, 0x6f, 0x6f
+};
+
+uint8_t fnd_big_circle_forward_font3[] = {
+	0xff, 0xff, 0xff, 0x7f, 0x7b, 0x73, 
+	0x63, 0x63, 0x63, 0x63, 0x63, 0x63
+};
+
+uint8_t fnd_big_circle_backward_font3[] = {
+	0xff, 0xff, 0xff, 0xff, 0xff, 0xef,
+	0xe7, 0xe3, 0x63, 0x63, 0x63, 0x63
+};
+
+uint8_t *fnd_big_circles[][4] = {
+	{
+		fnd_big_circle_forward_font3,
+		fnd_big_circle_forward_font2,
+		fnd_big_circle_forward_font1,
+		fnd_big_circle_forward_font0
+	},
+	{
+		fnd_big_circle_backward_font0,
+		fnd_big_circle_backward_font1,
+		fnd_big_circle_backward_font2,
+		fnd_big_circle_backward_font3
+	}
+};
 
 // --------------------------------------------------------------------------
 
 int digits[] = {FND_DIGIT_D1, FND_DIGIT_D2, FND_DIGIT_D3, FND_DIGIT_D4, FND_DIGIT_D5, FND_DIGIT_D6, FND_DIGIT_D7, FND_DIGIT_D8};
 	
-
+void fnd_display_big_circle(void)
+{
+	static int digit_select = 4;
+	int mycount = washing_msec_count + (washing_sec_time % 10 * 1000);
+	int speed = 30000 / 250;
+	
+	fnd_clear_digit();
+	FND_DIGIT_PORT |= 1 << digits[digit_select];
+	FND_DATA_PORT = fnd_big_circles[0][digit_select % 4][mycount / speed % 12];
+	
+	digit_select = (digit_select == 7) ? 4 : digit_select + 1;
+}
 	
 void fnd_display_done(void)
 {

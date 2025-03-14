@@ -31,6 +31,8 @@
 #define IN1		6
 #define IN2		7
 
+void motor_stop(void);
+
 void motor_speed_up_num(int n);
 void motor_speed_up_20(void);
 void motor_speed_down_num(int n);

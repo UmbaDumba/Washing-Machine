@@ -13,6 +13,8 @@
 #include <avr/io.h>
 #include <util/delay.h>  // _delay_ms _delay_us
 
+#include "pwm.h"
+
 #define FND_DATA_PORT  PORTC
 #define FND_DATA_DDR   DDRC
 
@@ -36,5 +38,6 @@ void fnd_display_dashs(void);
 void fnd_display_selectn(int mode);
 void fnd_display_done(void);
 void fnd_display_min_sec_num(int n);
+void fnd_display_big_circle(void);
 
 #endif /* FND_H_ */

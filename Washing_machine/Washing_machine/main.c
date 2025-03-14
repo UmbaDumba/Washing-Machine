@@ -70,7 +70,7 @@ FILE OUTPUT = FDEV_SETUP_STREAM(UART0_transmit, NULL, _FDEV_SETUP_WRITE);
 ISR(TIMER0_OVF_vect)
 {
 	TCNT0 = 6; // 6 ~ 256으로 돌리기 위해
-	if(timer_run) msec_count++;
+	msec_count++;
 	if(is_washing) washing_msec_count++;
 
 	fnd_shoot = 1;
@@ -114,7 +114,7 @@ int main(void)
 	stdout = &OUTPUT;	
 	sei();			
 	
-	test_main();
+	//test_main();
 	
 	int step = 0;
 	int mode = 0;
@@ -122,11 +122,9 @@ int main(void)
 	
 	while(1)
 	{
-		if (!isOn) continue;
+		//if (!isOn) continue;
 		
-		if(fnd_shoot){
-			display_2fnds(); // <- fnd에 보여줄거
-		}
+		
 		if(msec_count >= 1000)
 		{
 			sec_count++;

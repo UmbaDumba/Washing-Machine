@@ -66,7 +66,7 @@ void init_button_interrupt(void){
 		BUTTON_DDR &= ~(1 << button_arr[i]);
 	}
 	EICRA |= 1 << ISC01 | 1 << ISC11 | 1 << ISC21 | 1 << ISC31;
-	EICRA &- ~(1 << ISC00 | 1 << ISC10 | 1 << ISC20 | 1 << ISC30);
+	EICRA &= ~(1 << ISC00 | 1 << ISC10 | 1 << ISC20 | 1 << ISC30);
 	
 	for (int i = 0; i < BUTTON_NUMER; i++){
 		enable_button_interrupt(button_arr[i]);

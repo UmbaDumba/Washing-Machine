@@ -18,10 +18,10 @@
 #define BUTTON_DDR DDRD 
 #define BUTTON_PIN PIND    // PIND는 PORTD를 읽는 register 5v:1  0v:0 
 
-#define BUTTON0PIN  4    // PORTD.3
-#define BUTTON1PIN  5    // PORTD.4
-#define BUTTON2PIN  6    // PORTD.5
-#define BUTTON3PIN  7    // PORTD.6
+#define BUTTON0PIN  0    // PORTD.3
+#define BUTTON1PIN  1    // PORTD.4
+#define BUTTON2PIN  2    // PORTD.5
+#define BUTTON3PIN  3    // PORTD.6
 
 #define BUTTON0   0   // PORTD.3의 가상의 index(S/W 번호)
 #define BUTTON1   1   // PORTD.4의 가상의 index(S/W 번호)

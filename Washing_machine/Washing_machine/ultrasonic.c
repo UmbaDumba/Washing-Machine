@@ -9,9 +9,7 @@
 
 extern volatile int ultrasonic_check_timer;
 
-void init_ultrasonic(void);
-void trigger_ultrasonic(void);
-void distance_ultrasonic(void);
+
 
 
 volatile int ultrasonic_dis = 0;

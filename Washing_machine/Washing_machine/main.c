@@ -20,11 +20,7 @@
 // 시간정보, stop 텍스트, circle 등등
 
 // extern----------------------------------------------------------
-extern void init_ultrasonic(void);
-extern void distance_ultrasonic(void);
 
-extern int led_state;
-extern void (*funcs[])(void);
 extern volatile uint8_t rx_message_received;
 
 extern uint32_t sec_count;
@@ -40,12 +36,9 @@ void mode3_dry(int re_wash_time);
 volatile int msec_count = 0;
 volatile int ultrasonic_check_timer = 0;
 
-volatile int auto_mode = 1;
-volatile int led_select = 0;
-
 volatile int fnd_shoot = 0;
 
-int washing_machine[] = {
+int washing_machine[] = {    // 각 모드별 동작시간
 	MODE_1_WASHING_TIME, 
 	MODE_2_WASHING_TIME, 
 	MODE_3_WASHING_TIME,
@@ -65,18 +58,40 @@ ISR(TIMER0_OVF_vect)
 	ultrasonic_check_timer++; // 초음파센서에 활용할 타이머!
 }
 
+void test_main(){
+	int step = 2;
+	int mode = 0;
+	int washing_time = 0; // 지금 선택한 모드의 남은 세탁시간
+	
+
+	while(1)
+	{
+		step2_washing(mode, washing_time);
+		if(get_button(BUTTON0, BUTTON0PIN))
+		{
+			
+			mode++;
+			mode %= MODE_NUM;
+		}
+	}
+}
 
 
 int main(void)
 {
 	init_fnd();
 	init_timer0();
+	init_button();
+	init_timer3();
 	init_uart0();
 	init_ultrasonic();
+	init_L298N();
 	stdout = &OUTPUT;	
 	sei();			
 	
-	int step = 0;
+	test_main();
+	
+	int step = 2;
 	int mode = 0;
 	int washing_time = 0; // 지금 선택한 모드의 남은 세탁시간
 	
@@ -251,22 +266,26 @@ void mode1_default(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
+	motor_set_speed_max();
 }
 
 void mode2_wool(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
+	motor_set_speed_num(180);
 }
 
 void mode3_blanket(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
+	motor_set_speed_num(100);
 }
 
 void mode3_dry(int re_wash_time)
 {
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
+	motor_set_speed_min();
 }

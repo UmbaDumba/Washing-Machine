@@ -62,10 +62,49 @@ void init_timer3(void)
 
 void init_L298N(void)
 {
-	DDRF |= 1 << 6 | 1 << 7; // 출력모드
-	PORTF &= ~(1 << 6 | 1 << 7); // reset
+	MOTOR_DIR_DDR |= 1 << IN1 | 1 << IN2; // 출력모드
+	MOTOR_DIR_PORT &= ~(1 << IN1 | 1 << IN2); // reset
 	
-	PORTF |= 1 << 6;		// 정회전
+	MOTOR_DIR_PORT |= 1 << IN1;		// 정회전
+}
+
+void motor_set_speed_num(int n)
+{
+	 // n으로 모터의 speed를 설정함
+	 MOTOR_PWM = (n < MOTOR_SPEED_MIN) ? MOTOR_SPEED_MIN : 
+			(n > MOTOR_SPEED_MAX) ? MOTOR_SPEED_MAX : n;
+}
+
+void motor_set_speed_max(void)
+{
+	// 모터 speed를 최대로 설정
+	MOTOR_PWM = MOTOR_SPEED_MAX;
+}
+
+void motor_set_speed_min(void)
+{
+	// 모터 speed를 최소로 설정
+	MOTOR_PWM = MOTOR_SPEED_MIN;
+}
+
+void motor_speed_up_num(int n)
+{
+	MOTOR_PWM = (MOTOR_PWM >= MOTOR_SPEED_MAX) ? MOTOR_SPEED_MAX : (MOTOR_PWM + n);
+}
+
+void motor_speed_up_20(void)
+{
+	motor_speed_up_num(20);
+}
+
+void motor_speed_down_num(int n)
+{
+	MOTOR_PWM = (MOTOR_PWM - n <= MOTOR_SPEED_MIN) ? MOTOR_SPEED_MIN : (MOTOR_PWM - n);
+}
+
+void motor_speed_down_20(void)
+{
+	motor_speed_down_num(20);
 }
 
 void pwm_fan_control_main(void)

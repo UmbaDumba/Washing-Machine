@@ -80,7 +80,6 @@ int main(void)
 	int mode = 0;
 	int washing_time = 0; // 지금 선택한 모드의 남은 세탁시간
 	
-	L298N_pwm_fan_control_main();
 
 	while(1)
 	{

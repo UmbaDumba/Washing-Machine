@@ -245,6 +245,7 @@ int step3_wash_end(void)
 		// 모드선택으로 되돌아간다
 		return 1;	
 	}
+	return -1;
 }
 
 void mode1_default(int re_wash_time)

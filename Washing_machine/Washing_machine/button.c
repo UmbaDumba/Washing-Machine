@@ -5,13 +5,27 @@
  *  Author: microsoft
  */ 
 #include "button.h"
-// 버튼 초기화(방향설정: 입력)
-// DDRD 76543210
-//       1010    초기값     
-//      10000111 &  
-// DDRD &= 0x87     // 3.4.5.6을 input으로 설정을 한다. (1) 가독성이 떨어 진다. (code 해석이 어렵다)
-//													  (2) port를 변경시 프로그램 수정이 어렵다.    
 
+int interrupt_arr[4] = {INT0, INT1, INT2, INT3};
+int button_arr[4] = {BUTTON0, BUTTON1, BUTTON2, BUTTON3};
+extern volatile int step;
+int is_button_pressed[4] = {0, 0, 0, 0};
+	
+ISR(INT0_vect){
+	is_button_pressed[0] = 1;
+}
+
+ISR(INT1_vect){
+	is_button_pressed[1] = 1;
+}
+
+ISR(INT2_vect){
+	is_button_pressed[2] = 1;
+}
+
+ISR(INT3_vect){
+	is_button_pressed[3] = 1;
+}
                                                 
 void init_button(void)
 {
@@ -45,4 +59,32 @@ int get_button(int button_num, int button_pin)
 	}
 	
 	return 0;   // 버튼이 open상태 
+}
+
+void init_button_interrupt(void){
+	for (int i = 0; i < BUTTON_NUMER; i++){
+		BUTTON_DDR &= ~(1 << button_arr[i]);
+	}
+	EICRA |= 1 << ISC01 | 1 << ISC11 | 1 << ISC21 | 1 << ISC31;
+	EICRA &- ~(1 << ISC00 | 1 << ISC10 | 1 << ISC20 | 1 << ISC30);
+	
+	for (int i = 0; i < BUTTON_NUMER; i++){
+		enable_button_interrupt(button_arr[i]);
+	}
+}
+
+void enable_button_interrupt(int button_num){
+	EIMSK |= (1 << interrupt_arr[button_num]); 
+}
+
+void disable_button_interrupt(int button_num){
+	EIMSK &= ~(1 << interrupt_arr[button_num]); 
+}
+
+int is_pressed_button(int num){
+	if (is_button_pressed[num]){
+		is_button_pressed[num] = 0;
+		return 1;
+	} 
+	return is_button_pressed[num];
 }

@@ -68,6 +68,35 @@ void init_L298N(void)
 	MOTOR_DIR_PORT |= 1 << IN1;		// 정회전
 }
 
+void motor_dir_toggle(void)
+{
+	if(MOTOR_DIR_PORT & 1 << IN1){
+		// 지금 정회전
+		MOTOR_DIR_PORT &= ~(1 << IN1 | 1 << IN2);
+		MOTOR_DIR_PORT |= 1 << IN2;
+	}else{
+		// 지금 역회전
+		MOTOR_DIR_PORT &= ~(1 << IN1 | 1 << IN2);
+		MOTOR_DIR_PORT |= 1 << IN1;
+	}
+}
+
+int motor_get_dir(void)
+{
+	// 0 : 정회전
+	// 1 : 역회전
+	return !(!(MOTOR_DIR_PORT & 1 << IN2));
+}
+
+void change_dir(int n)
+{
+	// 0 : 정회전
+	// 1 : 역회전
+	
+	MOTOR_DIR_PORT &= ~(1 << IN1 | 1 << IN2); // 일단 reset;
+	MOTOR_DIR_PORT |= n ? (1 << IN2) : (1 << IN1);
+}
+
 void motor_set_speed_num(int n)
 {
 	 // n으로 모터의 speed를 설정함

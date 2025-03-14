@@ -79,8 +79,8 @@ uint8_t fnd_big_circle_forward_font1[] = {
 };
 
 uint8_t fnd_big_circle_backward_font1[] = {
-	0xff, 0xff, 0xff, 0x7f, 0x7f, 0x7f, 
-	0x7f, 0x7f, 0x7f, 0x7f, 0x6f, 0x6f
+	0xff, 0xff, 0xff, 0xef, 0xef, 0xef, 
+	0xef, 0xef, 0xef, 0xef, 0x6f, 0x6f
 };
 
 uint8_t fnd_big_circle_forward_font2[] = {
@@ -111,10 +111,10 @@ uint8_t *fnd_big_circles[][4] = {
 		fnd_big_circle_forward_font0
 	},
 	{
-		fnd_big_circle_backward_font0,
-		fnd_big_circle_backward_font1,
+		fnd_big_circle_backward_font3,
 		fnd_big_circle_backward_font2,
-		fnd_big_circle_backward_font3
+		fnd_big_circle_backward_font1,
+		fnd_big_circle_backward_font0
 	}
 };
 
@@ -122,7 +122,7 @@ uint8_t *fnd_big_circles[][4] = {
 
 int digits[] = {FND_DIGIT_D1, FND_DIGIT_D2, FND_DIGIT_D3, FND_DIGIT_D4, FND_DIGIT_D5, FND_DIGIT_D6, FND_DIGIT_D7, FND_DIGIT_D8};
 	
-void fnd_display_big_circle(void)
+void fnd_display_big_circle()
 {
 	static int digit_select = 4;
 	int mycount = washing_msec_count + (washing_sec_time % 10 * 1000);
@@ -130,7 +130,7 @@ void fnd_display_big_circle(void)
 	
 	fnd_clear_digit();
 	FND_DIGIT_PORT |= 1 << digits[digit_select];
-	FND_DATA_PORT = fnd_big_circles[0][digit_select % 4][mycount / speed % 12];
+	FND_DATA_PORT = fnd_big_circles[motor_get_dir()][digit_select % 4][mycount / speed % 12];
 	
 	digit_select = (digit_select == 7) ? 4 : digit_select + 1;
 }

@@ -15,6 +15,7 @@
 #include "uart0.h"
 #include "pwm.h"
 #include "fnd.h"
+#include "uart1.h"
 
 typedef struct{
 	int mode;
@@ -124,6 +125,7 @@ int main(void)
 	init_button_interrupt();
 	init_timer3();
 	init_uart0();
+	//init_uart1();
 	init_ultrasonic();
 	init_L298N();
 	stdout = &OUTPUT;	
@@ -135,9 +137,11 @@ int main(void)
 	int step = 0;
 	int mode = 0;
 	int isOn = 0;
+	int dir = 0; // 0 : 정회전, 1 : 역회전
 	
 	while(1)
 	{
+		//bt_command_processing();
 		//if (!isOn) continue;
 		
 		
@@ -337,7 +341,7 @@ void mode3_blanket(int re_wash_time)
 	// mode에 맞게 모터 회전속도를 조절한다.
 	// TODO
 	motor_set_speed_num(wash_speeds[2][re_wash_time % 2]);
-	//motor_set_speed_num(250);
+	change_dir(re_wash_time % 2);
 }
 
 void mode4_dry(int re_wash_time)

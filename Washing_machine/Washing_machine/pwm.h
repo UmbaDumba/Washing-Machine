@@ -32,6 +32,9 @@
 #define IN2		7
 
 void motor_stop(void);
+void change_dir(int n);
+void motor_dir_toggle(void);
+int motor_get_dir(void);
 
 void motor_speed_up_num(int n);
 void motor_speed_up_20(void);

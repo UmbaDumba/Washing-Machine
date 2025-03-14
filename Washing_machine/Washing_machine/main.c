@@ -15,7 +15,7 @@
 #include "uart0.h"
 #include "pwm.h"
 #include "fnd.h"
-#include "uart1.h"
+//#include "uart1.h"
 
 typedef struct{
 	int mode;
@@ -33,6 +33,15 @@ extern volatile uint8_t rx_message_received;
 
 extern uint32_t sec_count;
 extern int timer_run;
+extern void init_speaker(void);
+extern volatile int beep_active;   // 부저 활성화 여부
+extern volatile int beep_step;     // 현재 재생 중인 음
+extern volatile const int *beep_sequence;
+extern volatile int beep_length;
+extern void stop_sound();
+extern void start_sound();
+extern void Beep();
+
 
 // 선언 ----------------------------------------------------
 void init_timer0(void);
@@ -47,6 +56,8 @@ volatile int ultrasonic_check_timer = 0;
 volatile int is_washing = 0;
 volatile int washing_msec_count;
 uint32_t washing_sec_time = 0;
+volatile int buzzer_msec_count;
+uint32_t buzzer_sec_time = 0;
 
 
 volatile int fnd_shoot = 0;
@@ -91,6 +102,22 @@ ISR(TIMER0_OVF_vect)
 
 	fnd_shoot = 1;
 	ultrasonic_check_timer++; // 초음파센서에 활용할 타이머!
+	
+	if (beep_active) {
+		if (buzzer_msec_count > 0) {
+			buzzer_msec_count--;  // 현재 음 지속 시간 감소
+			} else {
+			beep_step++;  // 다음 음으로 이동
+
+			if (beep_step < beep_length) {
+				buzzer_msec_count = 200;  // 새로운 음 100ms 동안 유지
+				OCR1A = beep_sequence[beep_step]; // 새로운 주파수 설정
+				} else {
+				beep_active = 0;  // 마지막 음까지 재생 후 종료
+				OCR1A = 0;  // 부저 끄기
+			}
+		}
+	}
 }
 
 void test_main(){
@@ -125,8 +152,9 @@ int main(void)
 	init_button_interrupt();
 	init_timer3();
 	init_uart0();
+	init_speaker();
 	//init_uart1();
-	init_ultrasonic();
+	//init_ultrasonic();
 	init_L298N();
 	stdout = &OUTPUT;	
 	sei();			
@@ -162,6 +190,8 @@ int main(void)
 			mode = 0;
 			isOn = !isOn;
 			step = isOn ? 1 : 0;
+			if(isOn) stop_sound();
+			else start_sound();
 		}
 		
 		switch(step){
@@ -180,6 +210,7 @@ int main(void)
 				{
 					// 사용자가 모드확인을 눌렀을 때
 					// 다음 step으로 넘어간다.
+					stop_sound();
 					is_washing = 1;
 					step++;
 				}
@@ -194,15 +225,19 @@ int main(void)
 					// 세탁이 끝남!!
 					step++;
 					init_washtime();
+					start_sound();
 				}
 				
 				if (is_pressed_button(BUTTON0)){
+					Beep();
 					is_washing = 0;
 				}
 				if (is_pressed_button(BUTTON1)){
+					stop_sound();
 					is_washing = 1;
 				}
 				if (is_pressed_button(BUTTON2)){
+					start_sound();
 					init_washtime();
 					step--;
 				}
@@ -215,16 +250,19 @@ int main(void)
 				fnd_display_done();
 				_delay_ms(1);
 				if (is_pressed_button(BUTTON0)){
+					start_sound();
 					init_washtime();
 					step = 0;
 				}
 				
 				if (is_pressed_button(BUTTON1)){
+					stop_sound();
 					step = 2;
 					is_washing = 1;
 				}
 				
 				if (is_pressed_button(BUTTON2)){
+					Beep();
 					step = 1;
 					mode = 0;
 				}
@@ -270,12 +308,14 @@ int step1_select(void)
 	if(is_pressed_button(BUTTON0))
 	{
 		 // mode up
+		 Beep();
 		 result_mode++;
 		 result_mode %= MODE_NUM;
 	}
 	if(is_pressed_button(BUTTON1))
 	{
 		// mode down
+		Beep();
 		result_mode--;
 		result_mode = (result_mode + MODE_NUM) % MODE_NUM;
 	}
@@ -305,16 +345,19 @@ int step3_wash_end(void)
 	// 사용자 입력에 맞게, 종류 후 넘어갈 step을 반환한다
 	if(get_button(BUTTON0, BUTTON0PIN))
 	{
+		start_sound();
 		// 세탁물을 꺼내었다 -> 세탁기 종료
 		return 0;
 	}
 	if(get_button(BUTTON1, BUTTON1PIN))
 	{
+		stop_sound();
 		// 같은 모드로 한번 더 돌린다
 		return 2;
 	}
 	if(get_button(BUTTON2, BUTTON2PIN))
 	{
+		Beep();
 		// 모드선택으로 되돌아간다
 		return 1;	
 	}

@@ -9,7 +9,8 @@
 int interrupt_arr[4] = {INT0, INT1, INT2, INT3};
 int button_arr[4] = {BUTTON0, BUTTON1, BUTTON2, BUTTON3};
 extern volatile int step;
-int is_button_pressed[4] = {0, 0, 0, 0};
+volatile int is_button_pressed[4] = {0, 0, 0, 0};
+extern void RRR();
 	
 ISR(INT0_vect){
 	is_button_pressed[0] = 1;
@@ -17,6 +18,7 @@ ISR(INT0_vect){
 
 ISR(INT1_vect){
 	is_button_pressed[1] = 1;
+	
 }
 
 ISR(INT2_vect){

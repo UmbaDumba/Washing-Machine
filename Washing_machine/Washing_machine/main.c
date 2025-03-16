@@ -123,23 +123,7 @@ ISR(TIMER0_OVF_vect)
 	}
 }
 
-void test_main(){
-	int step = 2;
-	int mode = 0;
-	int washing_time = 0; // 지금 선택한 모드의 남은 세탁시간
-	
 
-	while(1)
-	{
-	
-		if(get_button(BUTTON0, BUTTON0PIN))
-		{
-			
-			mode++;
-			mode %= MODE_NUM;
-		}
-	}
-}
 
 void init_washtime(void){
 	is_washing = 0;
@@ -161,9 +145,6 @@ int main(void)
 	init_L298N();
 	stdout = &OUTPUT;	
 	sei();			
-	
-	//test_main();
-	//L298N_pwm_fan_control_main();
 	
 	int step = 0;
 	int mode = 0;
@@ -196,15 +177,16 @@ int main(void)
 			step = isOn ? 1 : 0;
 			if(isOn) stop_sound();
 			else start_sound();
+			motor_stop();
 		}
 		
 		switch(step){
-			case 0:
+			case STEP_0_MACHINE_OFF:
 				// 세탁기 off 상태
 				motor_stop();
 				fnd_display_dashs();
 				break;
-			case 1:
+			case STEP_1_SELECT_MODE:
 				// 세탁모드 선택 중
 				mode = step1_select();
 				if(mode == -1)
@@ -220,7 +202,7 @@ int main(void)
 					step++;
 				}
 				break;
-			case 2:
+			case STEP_2_WASHING:
 				fnd_display_min_sec_num(washing_machine[mode] - washing_sec_time);
 				_delay_ms(1);
 				fnd_display_big_circle();
@@ -246,11 +228,11 @@ int main(void)
 					init_washtime();
 					step--;
 				}
-				if(is_washing) wash_funcs[mode](washing_sec_time);
-				else motor_stop();
+				wash_funcs[mode](washing_sec_time);
+				
 				
 				break;
-			case 3:
+			case STEP_3_DONE:
 				//step = step3_wash_end();
 				fnd_display_done();
 				_delay_ms(1);

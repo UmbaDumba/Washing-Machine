@@ -15,6 +15,11 @@
 
 #define FUNC_NUM 8 // led함수 개수
 
+#define STEP_0_MACHINE_OFF	0		// 각 step 상수
+#define STEP_1_SELECT_MODE	1
+#define STEP_2_WASHING		2
+#define STEP_3_DONE			3
+
 #define MODE_NUM		4 // 세탁모드 개수
 
 #define MODE_1_DEFAULT	0

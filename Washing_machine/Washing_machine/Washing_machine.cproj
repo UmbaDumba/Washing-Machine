@@ -152,6 +152,9 @@
     <Compile Include="pwm.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Speaker.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="uart0.c">
       <SubType>compile</SubType>
     </Compile>

@@ -31,6 +31,9 @@
 #define IN1		6
 #define IN2		7
 
+#define FORWARD	0 // 정회전
+#define BACKWARD 1 // 역회전
+
 void motor_stop(void);
 void change_dir(int n);
 void motor_dir_toggle(void);

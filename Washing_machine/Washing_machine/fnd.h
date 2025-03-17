@@ -40,4 +40,6 @@ void fnd_display_done(void);
 void fnd_display_min_sec_num(int n);
 void fnd_display_big_circle(void);
 
+void fnd_display_washing(int secs);
+
 #endif /* FND_H_ */

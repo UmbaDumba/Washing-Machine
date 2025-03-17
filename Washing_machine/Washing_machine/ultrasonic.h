@@ -22,6 +22,7 @@
 #define ECHO_PIN PINE // External INT 4
 #define ECHO_DDR DDRE
 
+
 void init_ultrasonic(void);
 void trigger_ultrasonic(void);
 void distance_ultrasonic(void);

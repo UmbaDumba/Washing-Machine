@@ -15,7 +15,7 @@
 #include "uart0.h"
 #include "pwm.h"
 #include "fnd.h"
-//#include "uart1.h"
+#include "ultrasonic.h"
 
 typedef struct{
 	int mode;
@@ -140,7 +140,6 @@ int main(void)
 	init_timer3();
 	init_uart0();
 	init_speaker();
-	//init_uart1();
 	init_ultrasonic();
 	init_L298N();
 	stdout = &OUTPUT;	
@@ -188,6 +187,7 @@ int main(void)
 				break;
 			case STEP_1_SELECT_MODE:
 				// 세탁모드 선택 중
+				motor_stop();
 				mode = step1_select();
 				if(mode == -1)
 				{
@@ -213,6 +213,7 @@ int main(void)
 					step++;
 					init_washtime();
 					start_sound();
+					motor_stop();
 				}
 				
 				if (is_pressed_button(BUTTON0)){
@@ -227,6 +228,7 @@ int main(void)
 					start_sound();
 					init_washtime();
 					step--;
+					motor_stop();
 				}
 				wash_funcs[mode](washing_sec_time);
 				
@@ -234,6 +236,7 @@ int main(void)
 				break;
 			case STEP_3_DONE:
 				//step = step3_wash_end();
+				motor_stop();
 				fnd_display_done();
 				_delay_ms(1);
 				if (is_pressed_button(BUTTON0)){
@@ -314,13 +317,16 @@ int step1_select(void)
 	{
 		// 세탁 시작 -> 초음파센서로 문이 닫혀있는지 확인하고 보내기
 		
-		//trigger_ultrasonic();
-		//printf("%d\n", ultrasonic_dis);
-		//if(ultrasonic_dis >= 10)
-		//{
-			//Beep();
-			//return -1;
-		//}
+		trigger_ultrasonic();
+		
+		_delay_ms(100);
+		printf("check distance : %d\n", ultrasonic_dis);
+		if(ultrasonic_dis > 3)
+		{
+			printf("door open\n");
+			Beep();
+			return -1;
+		}
 		
 		return result_mode;
 	}

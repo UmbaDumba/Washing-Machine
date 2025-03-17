@@ -122,6 +122,15 @@ uint8_t *fnd_big_circles[][4] = {
 
 int digits[] = {FND_DIGIT_D1, FND_DIGIT_D2, FND_DIGIT_D3, FND_DIGIT_D4, FND_DIGIT_D5, FND_DIGIT_D6, FND_DIGIT_D7, FND_DIGIT_D8};
 	
+void fnd_display_washing(int secs)
+{
+	static int shoots = 0;
+	if(shoots % 2 == 0) fnd_display_min_sec_num(secs);
+	else  fnd_display_big_circle();
+	
+	shoots++;
+}
+	
 void fnd_display_big_circle()
 {
 	static int digit_select = 4;
